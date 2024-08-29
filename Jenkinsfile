@@ -1,19 +1,36 @@
 pipeline {
     agent any
+    
+    tools {
+        maven 'Maven'  // Asegúrate de que este nombre coincida con la configuración de Maven en Jenkins
+    }
+    
     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'mvn clean package'
             }
         }
-        stage('Test') {
+        
+        stage('SonarQube Analysis') {
             steps {
-                echo 'Testing..'
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar'
+                }
             }
         }
-        stage('Deploy') {
+        
+        stage("Quality Gate") {
             steps {
-                echo 'Deploying....'
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
     }
