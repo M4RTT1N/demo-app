@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        maven 'Maven'  // Asegúrate de que este nombre coincida con la configuración de Maven en Jenkins
+        maven 'Maven'
     }
     
     stages {
@@ -21,7 +21,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
+                    sh 'mvn sonar:sonar -Dsonar.host.url=http://192.168.0.17:9000'
                 }
             }
         }
